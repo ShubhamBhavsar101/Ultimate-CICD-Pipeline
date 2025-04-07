@@ -2,7 +2,7 @@
 Using Jenkins to build a CI CD Pipeline as well as using docker, git, argocd, kubernetes, aws ec2 instances
 
 
-1. Install Jenkins on local machine.
+1. Install Jenkins on local machine. Here I am using Ubuntu in wsl. so I am going to install Jenkins on Ubuntu. To install Jenkins follow the [Jenkins Installation](https://github.com/ShubhamBhavsar101/Installing-Jenkins/blob/main/README.md)
 2. Install Docker Pipeline Plugin.
 3. Install SonarQube Scanner Plugin.
 4. Create New Project. Add Git for Jenkinsfile.
