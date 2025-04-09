@@ -6,28 +6,27 @@ pipeline {
     }
   }
   environment {
-	SONARQUBE_ENV = 'SonarServer'
-	DOCKER_IMAGE = "shubhszone/ultimate-cicd:${BUILD_NUMBER}"
-	REGISTRY_CREDENTIALS = credentials('docker-cred')
+    SONARQUBE_ENV = 'SonarServer'
+    DOCKER_IMAGE = "shubhszone/ultimate-cicd:${BUILD_NUMBER}"
+    REGISTRY_CREDENTIALS = credentials('docker-cred')
   }
   stages {
     stage('Checkout') {
       steps {
-        sh 'echo passed';
-        git branch: 'main', url: 'https://github.com/ShubhamBhavsar101/Jenkins-Zero-To-Hero.git'
+        git branch: 'main', url: 'https://github.com/ShubhamBhavsar101/Ultimate-CICD-Pipeline.git'
       }
     }
     stage('Build') {
       steps {
         // build the project and create a JAR file
-        sh 'cd java-maven-sonar-argocd-helm-k8s/spring-boot-app && mvn clean package'
+        sh 'cd spring-boot-app && mvn clean package'
       }
     }
 
     stage('SonarQube Analysis') {
         steps {
             withSonarQubeEnv("${env.SONARQUBE_ENV}") {
-                sh 'cd java-maven-sonar-argocd-helm-k8s/spring-boot-app && mvn sonar:sonar'
+                sh 'cd spring-boot-app && mvn sonar:sonar'
             }
         }
     }
@@ -43,29 +42,29 @@ pipeline {
         }
       }
     }
-   	stage('Update Deployment File') {
-		environment {
-			GIT_REPO_NAME = "Jenkins-Zero-To-Hero"
-			GIT_USER_NAME = "ShubhamBhavsar101"
-		}
-		steps {
-			withCredentials([string(credentialsId: 'github', variable: 'GITHUB_TOKEN')]) {
-        sh """
-					git config --global --add safe.directory /var/lib/jenkins/workspace/Ultimate_CICD
-          git status
+  //  	stage('Update Deployment File') {
+	// 	environment {
+	// 		GIT_REPO_NAME = "Jenkins-Zero-To-Hero"
+	// 		GIT_USER_NAME = "ShubhamBhavsar101"
+	// 	}
+	// 	steps {
+	// 		withCredentials([string(credentialsId: 'github', variable: 'GITHUB_TOKEN')]) {
+  //       sh """
+	// 				git config --global --add safe.directory /var/lib/jenkins/workspace/Ultimate_CICD
+  //         git status
 
-					git config user.email 'shubhamcbhavsar198@gmail.com'
-					git config user.name 'Shubham Bhavsar'
+	// 				git config user.email 'shubhamcbhavsar198@gmail.com'
+	// 				git config user.name 'Shubham Bhavsar'
 
-					sed -i "s/replaceImageTag/${BUILD_NUMBER}/g" java-maven-sonar-argocd-helm-k8s/spring-boot-app-manifests/deployment.yml
+	// 				sed -i "s/replaceImageTag/${BUILD_NUMBER}/g" java-maven-sonar-argocd-helm-k8s/spring-boot-app-manifests/deployment.yml
 
-					git add java-maven-sonar-argocd-helm-k8s/spring-boot-app-manifests/deployment.yml
-					git commit -m "Update deployment image to version ${BUILD_NUMBER}"
-					git push https://${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME}.git HEAD:main
-				"""
-			}
-		}
-	}
+	// 				git add java-maven-sonar-argocd-helm-k8s/spring-boot-app-manifests/deployment.yml
+	// 				git commit -m "Update deployment image to version ${BUILD_NUMBER}"
+	// 				git push https://${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME}.git HEAD:main
+	// 			"""
+	// 		}
+	// 	}
+	// }
   }
 }
 
